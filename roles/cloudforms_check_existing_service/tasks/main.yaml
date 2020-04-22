@@ -1,0 +1,8 @@
+- name: Retrieving Service URL
+  uri: url={{ cloudforms_api_url }}/api/services method=GET status_code=200
+      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+  register: list_services
+
+- name: "Check if there are any available services"
+  fail: msg="There are available services running. No need for a second attempt"
+  when: list_services.json.subcount > 0

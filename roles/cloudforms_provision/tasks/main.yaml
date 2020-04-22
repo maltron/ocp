@@ -1,0 +1,5 @@
+- name: "Request Service: {{ rhpds_service_name }}"
+  uri: url={{ cloudforms_api_url }}{{ rhpds_service_catalogue }}
+      method=POST status_code=200 body_format=json
+      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+      body='{"warning":"**IMPORTANT PLEASE READ**","check":"t","expense_text":"WARNING","check2":"t","salesforce":"9342114443","city":"maltron","notes":"content development","expiration":"2","expd":"2020-02-10 06:21:13 -0500","runtime":"15","quotacheck":"t","quotatext":"Quotas are administratively disabled for your current group.  You have 0 applications currently running.","users":"30","region":"{{ cloudforms_region }}","use_letsencrypt":"t","action":"order"}'

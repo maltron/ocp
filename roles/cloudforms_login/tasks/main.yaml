@@ -1,0 +1,9 @@
+- name: "Logging In"
+  uri: url={{ cloudforms_api_url }}/api/auth method=GET status_code=200 
+      force_basic_auth=True
+      user={{ username }} password={{ password }}
+      headers={"Content-type":"application/json","Accept":"application/json"}
+  register: authentication
+
+- name: "Authentication Token{{ ':' }} {{ authentication.json.auth_token }}"
+  set_fact: authentication_token="{{ authentication.json.auth_token }}"
