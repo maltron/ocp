@@ -1,0 +1,14 @@
+# CloudForms API URL
+rhpds_api_url: "https://rhpds.redhat.com"
+opentlc_api_url: "https://labs.opentlc.com"
+
+# (Optional) A custom public key file with all your needed public keys
+#            which it's going to be inserted into Bastion's authorized_key
+personal_pub_file: "{{ ansible_env.HOME }}/.ssh/maltron.pub"
+
+# (Optional) If you want to automatically open the browser
+#            provide the location of your browser
+google_chrome: "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome"
+
+# Region used to provisioning: na_gpte, emea_gpte, apac_gpte
+cloudforms_region: na_gpte
