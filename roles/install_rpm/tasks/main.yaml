@@ -1,0 +1,2 @@
+- name: "Installing rpm: {{ rpm_url }}"
+  yum: name={{ rpm_url }} state=present

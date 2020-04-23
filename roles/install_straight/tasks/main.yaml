@@ -1,0 +1,14 @@
+- name: "Creating directory: {{ directory }}"
+  file: path={{ directory }} state=directory 
+
+- name: "Defining filename: {{ directory }}/{{ application_name }}"
+  set_fact: filename="{{ directory }}/{{ application_name }}"
+
+- name: "Deleting any previously file downloaded: {{ filename }}"
+  file: path={{ filename }} state=absent
+
+- name: "Downloading: {{ url }}"
+  uri: url={{ url }} dest={{ filename }} headers={{ headers }} validate_certs=False
+
+- name: "Making executable"
+  file: path={{ filename }} mode="a+x"

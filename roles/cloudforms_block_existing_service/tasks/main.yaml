@@ -4,8 +4,5 @@
   register: list_services
 
 - name: "Check if there are any available services"
-  fail: msg="There are no available services"
-  when: list_services.json.subcount == 0  
-
-- name: "Service Selected{{ ':' }} {{ list_services.json.resources[0].href }}"
-  set_fact: service_selected="{{ list_services.json.resources[0].href }}"  
+  fail: msg="There are available services running. No need for a second attempt"
+  when: list_services.json.subcount > 0

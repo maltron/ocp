@@ -1,0 +1,22 @@
+- name: "Installing Python PIP"
+  yum: name=python-pip state=latest
+
+- name: "Library for Python: docker-py"
+  command: pip install docker-py
+
+- name: "Docker CE: Adding Repository"
+  get_url: url=https://download.docker.com/linux/centos/docker-ce.repo
+           dest=/etc/yum.repos.d
+
+- name: Removing Original Docker
+  yum: name=[docker,docker-ce,docker-common,docker-client] state=absent
+
+- name: Installing Docker CE
+  yum: name=docker-ce state=present
+
+- name: Starting Docker CE Service
+  service: name=docker state=started enabled=yes
+
+- name: "If docker credentials are provided, docker login: docker_registry, docker_username, docker_password"
+  docker_login: registry={{ docker_registry }} username={{ docker_username }} password={{ docker_password }}
+  when: docker_registry is defined and docker_registry is not none and docker_username is defined and docker_username is not none and docker_password is defined and docker_password is not none

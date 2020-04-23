@@ -1,0 +1,24 @@
+- name: "Create all the necessary Projects/Namespaces needed"
+  command: oc new-project {{ item }}
+  with_items: [knative-eventing, knative-serving]
+  ignore_errors: True
+
+- name: "Create all the necessary Operators needed"
+  shell: "{{ item }} | oc create -f -"
+  with_items:
+     - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"knative-eventing-operator","namespace":"openshift-operators"},"spec":{"channel":"alpha","installPlanApproval":"Automatic","name":"knative-eventing-operator","source":"community-operators","sourceNamespace":"openshift-marketplace"}}'
+     - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"serverless-operator","namespace":"openshift-operators"},"spec":{"channel":"techpreview","installPlanApproval":"Automatic","name":"serverless-operator","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
+  ignore_errors: True
+  tags: [ operator ]
+
+- name: "Waiting for Knative Serving to be ready"
+  command: oc get clusterserviceversion/serverless-operator.{{ serverless_version }} --namespace knative-serving -o jsonpath='{.status.phase}'
+  register: operator_status
+  until: operator_status.rc == 0 and operator_status.stdout == "Succeeded"
+  retries: 5
+  delay: 60
+  ignore_errors: True
+
+- name: "Creating Knative-Serving instance on Knative-Serving namespace"
+  shell: echo '{"apiVersion":"operator.knative.dev\/v1alpha1","kind":"KnativeServing","metadata":{"name":"knative-serving","namespace":"knative-serving"},"spec":{"config":{"autoscaler":{"container-concurrency-target-default":"100","container-concurrency-target-percentage":"1.0","enable-scale-to-zero":"true","max-scale-up-rate":"10","panic-threshold-percentage":"200.0","panic-window":"6s","panic-window-percentage":"10.0","scale-to-zero-grace-period":"30s","stable-window":"60s","tick-interval":"2s"},"defaults":{"revision-cpu-limit":"1000m","revision-cpu-request":"400m","revision-memory-limit":"200M","revision-memory-request":"100M","revision-timeout-seconds":"300"},"deployment":{"registriesSkippingTagResolving":"ko.local,dev.local"},"gc":{"stale-revision-create-delay":"24h","stale-revision-lastpinned-debounce":"5h","stale-revision-minimum-generations":"1","stale-revision-timeout":"15h"},"logging":{"loglevel.activator":"info","loglevel.autoscaler":"info","loglevel.controller":"info","loglevel.queueproxy":"info","loglevel.webhook":"info"},"observability":{"logging.enable-var-log-collection":"false","metrics.backend-destination":"prometheus"},"tracing":{"backend":"none","sample-rate":"0.1"}}}}' | oc create -n knative-serving -f -
+  ignore_errors: True

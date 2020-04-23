@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: Provisioning Environment"
+- name: "RHPDS: OpenShift Login"
   hosts: localhost
   connection: local
   gather_facts: False
@@ -21,5 +21,15 @@
        tags: [ always ]
   roles: 
      - role: cloudforms_login
-     - role: cloudforms_block_existing_service
-     - role: cloudForms_provision
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes
+  
+- name: Logging into an existing OpenShift Cluster
+  hosts: localhost,personal_hosts
+  gather_facts: False
+  vars:
+     openshift_user: "{{ hostvars['localhost']['openshift_user'] }}"
+     openshift_password: "{{ hostvars['localhost']['openshift_password'] }}"
+     openshift_api: "{{ hostvars['localhost']['openshift_api'] }}"
+  roles:
+     - role: ocp_login

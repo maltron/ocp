@@ -1,0 +1,2 @@
+- name: Logging into OpenShift 
+  command: oc login --username={{ openshift_user }} --password={{ openshift_password }} --insecure-skip-tls-verify --server={{ openshift_api }}

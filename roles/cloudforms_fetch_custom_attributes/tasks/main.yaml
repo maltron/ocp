@@ -1,0 +1,22 @@
+- name: "Fetching Custom Attributes{{ ':' }} {{ service_selected }}"
+  uri: url={{ service_selected }}?attributes=custom_attributes method=GET status_code=200
+      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+  register: custom_attributes
+
+- name: Fetching OpenShift API (Environment Info 1)
+  set_fact: openshift_api={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 1'].value")|first|regex_replace("^Openshift API for command line 'oc' client[:] ", "") }}
+
+- name: Fetching SSH Access information (Environment Info 4)
+  set_fact: ssh_host_target_host={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 4'].value")|first|regex_replace("^SSH Access[:] ssh ", "") }}
+
+- set_fact: target_host_user="{{ ssh_host_target_host | regex_replace("[@](.*)$", "") }}"
+- set_fact: target_host_name="{{ ssh_host_target_host | regex_replace("^(.*)[@]", "") }}"
+
+- name: Fetching OpenShift user and password (Environment Info 14)
+  set_fact: openshift_user_password={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 14'].value")|first|regex_replace("^OpenShift Terminal is configured for users ", "") }}
+
+- set_fact: openshift_user="{{ openshift_user_password | regex_replace("[ ]with password[ ](.*)$", "") }}"
+- set_fact: openshift_password="{{ openshift_user_password | regex_replace("^(.*)[ ]with password[ ]", "") }}"
+
+- name: Fetching Password for Host (Environment Info 5)
+  set_fact: target_host_password={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 5'].value")|first|regex_replace("^SSH password[:] ", "") }}

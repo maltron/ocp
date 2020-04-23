@@ -1,9 +1,9 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: Provisioning Environment"
+- name: "RHPDS: Bastion Setup"
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: True
   vars_files: 
       - configuration.yaml
       - credentials.yaml
@@ -21,5 +21,18 @@
        tags: [ always ]
   roles: 
      - role: cloudforms_login
-     - role: cloudforms_block_existing_service
-     - role: cloudForms_provision
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes
+     - role: bastion_init
+
+- name: Setting up bastion
+  hosts: openshift_bastion
+  gather_facts: False
+  become: True
+  pre_tasks: 
+    - name: Inserting public key into /root/.ssh/authorized_keys
+      copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}  
+  roles:
+     - install_docker_ce
+     - install_git2
+

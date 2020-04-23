@@ -1,0 +1,21 @@
+- name: Setting Up Bastion to easy access
+  add_host: groups=openshift_bastion hostname={{ target_host_name }}
+            ansible_user={{ target_host_user }} ansible_password={{ target_host_password }}
+            openshift_user={{ openshift_user }} openshift_password={{ openshift_password }} openshift_api={{ openshift_api }}
+
+- name: Replacing the name of the bastion for OCP4
+  replace: path={{ ansible_env.HOME }}/.ssh/config
+          regexp="^        Hostname bastion(.*)example.opentlc.com"
+          replace="        Hostname {{ target_host_name }}"     
+
+- name: "Check the existence of a personal public file{{ ':' }} {{ personal_pub_file }}"
+  stat: path={{ personal_pub_file }}
+  register: pub_file
+
+- name: "Reading personal Public Key: {{ personal_pub_file }}"
+  set_fact: public_key="{{ lookup('file', '{{ personal_pub_file }}') }}"
+  when: pub_file.stat.exists
+
+- name: "Reading local Public Key: {{ ansible_env.HOME }}/.ssh./id_rsa.pub"
+  set_fact: public_key="{{ lookup('file', '{{ ansible_env.HOME }}/.ssh/id_rsa.pub') }}"
+  when: not pub_file.stat.exists

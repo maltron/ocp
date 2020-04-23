@@ -1,0 +1,27 @@
+- name: "Creating directory: {{ directory }}"
+  file: path={{ directory }} state=directory 
+
+- name: "Defining filename: {{ directory }}/{{ application }}.{{ extension }}"
+  set_fact: filename="{{ directory }}/{{ application }}.tar.gz"
+  tags: [ untar ]
+
+- name: "Deleting any previously file downloaded: {{ filename }}"
+  file: path={{ filename }} state=absent
+
+- name: "Deleting any previously directories: {{ directory }}/{{ application }}"
+  file: path={{ directory }}/{{ application }} state=absent
+
+- name: "Downloading: {{ url }}"
+  uri: url={{ url }} dest={{ filename }} headers={{ headers }} validate_certs=False
+
+- name: "Unarchiving {{ filename }} into {{ directory }}"
+  unarchive: src={{ filename }} dest={{ directory }} list_files=True
+  register: unarchive_output
+  tags: [ untar ]
+
+- name: "Moving directory name into {{ application }}"
+  command: mv {{ directory }}/{{ unarchive_output.files[0].split('/')[0] }} {{ directory }}/{{ application }}
+  when: not skip_moving
+
+- name: "Deleting file: {{ filename }}"
+  file: path={{ filename }} state=absent

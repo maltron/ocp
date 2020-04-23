@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: Provisioning Environment"
+- name: "RHPDS: Day 2 Setup"
   hosts: localhost
   connection: local
   gather_facts: False
@@ -21,5 +21,8 @@
        tags: [ always ]
   roles: 
      - role: cloudforms_login
-     - role: cloudforms_block_existing_service
-     - role: cloudForms_provision
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes
+     - role: ocp_login
+     - role: ocp_create_ossm
+     - role: ocp_create_knative
