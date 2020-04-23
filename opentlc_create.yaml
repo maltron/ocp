@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: OpenShift Login"
+- name: "OPENTLC: Provisioning Environment"
   hosts: localhost
   connection: local
   gather_facts: False
@@ -8,7 +8,7 @@
       - configuration.yaml
       - credentials.yaml
   vars:
-     cloudforms_api_url: "{{ rhpds_api_url }}"
+     cloudforms_api_url: "{{ opentlc_api_url }}"
   pre_tasks:
      - name: "Parameter: username"
        fail: msg="username is not defined or is empty"
@@ -21,15 +21,8 @@
        tags: [ always ]
   roles: 
      - role: cloudforms_login
-     - role: cloudforms_check_existing_service
-     - role: cloudforms_fetch_custom_attributes
-  
-- name: Logging into an existing OpenShift Cluster
-  hosts: localhost,personal_hosts
-  gather_facts: False
-  vars:
-     openshift_user: "{{ hostvars['localhost']['openshift_user'] }}"
-     openshift_password: "{{ hostvars['localhost']['openshift_password'] }}"
-     openshift_api: "{{ hostvars['localhost']['openshift_api'] }}"
-  roles:
-     - role: ocp_login
+     - role: cloudforms_block_existing_service
+     - role: cloudforms_provision
+       service_name: "{{ opentlc_service_name }}"
+       service_catalogue: "{{ opentlc_service_catalogue }}"
+       cloudforms_region: "na_sandboxes_gpte"

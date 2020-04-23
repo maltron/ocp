@@ -1,0 +1,30 @@
+apiVersion: v1
+baseDomain: {{ guid }}{{ top_level_domain }}
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform: {}
+  replicas: 3
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: cluster-{{ guid }}
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineCIDR: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  aws:
+    region: {{ aws_region }}
+publish: External
+pullSecret: '{{ openshift_pull_secret | to_json }}'
+sshKey: |
+  {{ public_key.content | b64decode }}

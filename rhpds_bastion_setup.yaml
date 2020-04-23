@@ -1,9 +1,9 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: OpenShift Login"
+- name: "RHPDS: Bastion Setup"
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: True
   vars_files: 
       - configuration.yaml
       - credentials.yaml
@@ -23,13 +23,24 @@
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
      - role: cloudforms_fetch_custom_attributes
-  
-- name: Logging into an existing OpenShift Cluster
-  hosts: localhost,personal_hosts
-  gather_facts: False
-  vars:
-     openshift_user: "{{ hostvars['localhost']['openshift_user'] }}"
-     openshift_password: "{{ hostvars['localhost']['openshift_password'] }}"
-     openshift_api: "{{ hostvars['localhost']['openshift_api'] }}"
+     - role: bastion_init
+
+- name: Updating .ssh/config to easy access
+  hosts: personal_hosts,localhost
+  gather_facts: True
+  vars: 
+     target_host_name: "{{ hostvars['localhost']['target_host_name'] }}"
   roles:
-     - role: ocp_login
+     - role: bastion_ssh_config
+
+- name: Setting up bastion
+  hosts: openshift_bastion
+  gather_facts: False
+  become: True
+  pre_tasks: 
+    - name: Inserting public key into /root/.ssh/authorized_keys
+      copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}  
+  roles:
+     - install_docker_ce
+     - install_git2
+

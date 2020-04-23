@@ -4,5 +4,5 @@
   register: list_services
 
 - name: "Check if there are any available services"
-  fail: msg="There are available services running. No need for a second attempt"
+  fail: msg="There are available services running"
   when: list_services.json.subcount > 0

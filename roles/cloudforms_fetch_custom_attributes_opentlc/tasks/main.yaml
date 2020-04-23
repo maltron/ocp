@@ -1,0 +1,49 @@
+- name: "Fetching Custom Attributes{{ ':' }} {{ service_selected }}"
+  uri: url={{ service_selected }}?attributes=custom_attributes method=GET status_code=200
+      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+  register: custom_attributes
+
+# - name: Fetching SSH Access information
+#   set_fact: ssh_host_target_host={{ item.value | regex_replace("^SSH Access[:] ssh ", "") }}
+#   with_items: "{{ custom_attributes.json.custom_attributes }}"
+#   when: '"SSH Access" in item.value'
+#   tags: [ always ]
+
+# - set_fact: target_host_user="{{ ssh_host_target_host | regex_replace("[@](.*)$", "") }}"
+#   tags: [ always ]
+
+# - set_fact: target_host_name="{{ ssh_host_target_host | regex_replace("^(.*)[@]", "") }}"
+#   tags: [ always ]
+- set_fact: target_host_name={{ custom_attributes|json_query("json.custom_attributes[?name=='targetHost'].value")|first }}
+- set_fact: target_host_user={{ username }}
+
+- name: Fetching Password for Host 
+  set_fact: target_host_password={{ item.value | regex_replace("^SSH password[:] ", "") }}
+  with_items: "{{ custom_attributes.json.custom_attributes }}"
+  when: '"SSH password:" in item.value'
+  tags: [ always ]
+
+- name: Fetching AWS Key
+  set_fact: aws_key={{ item.value | regex_replace("^aws_access_key_id [=] ", "") }}
+  with_items: "{{ custom_attributes.json.custom_attributes }}"
+  when: '"aws_access_key_id" in item.value'
+  tags: [ always ]
+
+- name: Fetching AWS Secret 
+  set_fact: aws_secret={{ item.value | regex_replace("^aws_secret_access_key [=] ", "") }}
+  with_items: "{{ custom_attributes.json.custom_attributes }}"
+  when: '"aws_secret_access_key" in item.value'
+  tags: [ always ]
+
+- name: Fetching GUID
+  set_fact: guid={{ item.value }}
+  with_items: "{{ custom_attributes.json.custom_attributes }}"
+  when: '"GUID" in item.name'
+  tags: [ always ]
+
+- name: Top Level Domain
+  set_fact: top_level_domain={{ item.value | regex_replace("^Top level domain[:] ", "") }}
+  with_items: "{{ custom_attributes.json.custom_attributes }}"
+  when: '"Top level domain" in item.value'
+  tags: [ always ]
+

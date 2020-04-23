@@ -22,4 +22,6 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_block_existing_service
-     - role: cloudForms_provision
+     - role: cloudforms_provision
+       service_name: "{{ rhpds_service_name }}"
+       service_catalogue: "{{ rhpds_service_catalogue }}"

@@ -3,11 +3,6 @@
             ansible_user={{ target_host_user }} ansible_password={{ target_host_password }}
             openshift_user={{ openshift_user }} openshift_password={{ openshift_password }} openshift_api={{ openshift_api }}
 
-- name: Replacing the name of the bastion for OCP4
-  replace: path={{ ansible_env.HOME }}/.ssh/config
-          regexp="^        Hostname bastion(.*)example.opentlc.com"
-          replace="        Hostname {{ target_host_name }}"     
-
 - name: "Check the existence of a personal public file{{ ':' }} {{ personal_pub_file }}"
   stat: path={{ personal_pub_file }}
   register: pub_file

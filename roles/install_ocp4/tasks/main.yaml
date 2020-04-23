@@ -1,0 +1,161 @@
+- name: "Creating directory: /root/cluster-{{ guid }}"
+  file: path=/root/cluster-{{ guid }} state=directory
+  tags: [ bastion ]
+
+- name: Delete previously created Public and Private Keys
+  file: path=/root/.ssh/{{ item }} state=absent
+  with_items:
+      - cluster-{{ guid }}-key
+      - cluster-{{ guid }}-key.pub
+  ignore_errors: True
+
+- name: "Generating SSH Public and Private Keys"
+  command: "ssh-keygen -b 4096 -t rsa -f /root/.ssh/cluster-{{ guid }}-key -q -N \"\""
+  tags: [ bastion, openshift_install ]
+
+- name: "Creating a environment variables on /root/.bashrc"
+  lineinfile: path=/root/.bashrc insertafter=EOF line="export {{ item }}"
+  with_items: 
+        - "GUID={{ guid }}"
+        - "KUBECONFIG=/root/cluster-{{ guid }}/auth/kubeconfig"
+  tags: [ bastion, openshift_install ]
+
+- name: Reading the contents of the Pull Secret File
+  set_fact: openshift_pull_secret="{{ lookup('file', '{{ openshift_pull_secret_file }}') }}"
+  tags: [ openshift_install, openshift_install_install_config ]
+
+- name: Reading the contents of the public key file
+  slurp: src=/root/.ssh/cluster-{{ guid }}-key.pub
+  register: public_key
+  tags: [ openshift_install, openshift_install_install_config ]
+
+- name: "OpenShift Install: Generating Config File"
+  template: src=install-config.yaml.j2 dest=/root/cluster-{{ guid }}/install-config.yaml
+  tags: [ aws, openshift_install, openshift_install_install_config ]
+
+- name: Inserting public key into /root/.ssh/authorized_keys
+  copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
+  tags: [ bastion ]
+
+- name: Installing Epel release
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=present
+  tags: [ bastion ]      
+
+- name: Installing Python PIP
+  yum: name=python-pip state=latest
+  tags: [ bastion ]
+
+- name: "Library for Python: docker-py"
+  command: pip install docker-py 
+  tags: [ bastion ]
+
+- name: "Docker CE: Adding Repository"
+  get_url: url=https://download.docker.com/linux/centos/docker-ce.repo
+            dest=/etc/yum.repos.d
+  tags: [ bastion ]
+
+- name: Removing Original Docker
+  yum: name=[docker,docker-ce,docker-common,docker-client] state=absent
+  tags: [ bastion ]
+
+- name: Installing Docker CE
+  yum: name=docker-ce state=present
+  tags: [ bastion ]
+
+- name: Starting Docker CE Service
+  service: name=docker state=started enabled=yes      
+  tags: [ bastion ]
+
+- name: "If docker credentials are provided, docker login: docker_registry, docker_username, docker_password"
+  docker_login: registry={{ docker_registry }} username={{ docker_username }} password={{ docker_password }}
+  when: docker_registry is defined and docker_registry is not none and docker_username is defined and docker_username is not none and docker_password is defined and docker_password is not none
+  become: True
+  tags: [ bastion ]
+
+- name: Removing Original Git
+  yum: name=git state=absent
+  tags: [ bastion ]
+
+- name: Installing Git 2 
+  yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
+  tags: [ bastion ]
+
+- name: Installing Git 2 All
+  yum: name=git2u-all state=present   
+  tags: [ bastion ]   
+
+- name: Installing all needed packages for Bastion
+  yum: name={{ bastion_packages }} state=present
+  tags: [ bastion ]
+
+- name: "AWS: Deleting previously directory"
+  file: path=/tmp/awscli-bundle state=absent  
+  ignore_errors: True
+  tags: [ aws ]
+
+- name: "Downloading files"
+  get_url: url={{ item.url }} dest=/tmp/{{ item.filename }}
+  with_items: 
+        - "{{ aws_client }}"
+        - "{{ openshift_install }}"
+        - "{{ openshift_client }}"
+  tags: [ aws, openshift_install, openshift_client ]
+
+- name: "Unarchiving files"
+  unarchive: src=/tmp/{{ item.filename }} dest=/tmp/ remote_src=True
+  with_items: 
+        - "{{ aws_client }}"
+        - "{{ openshift_install }}"
+        - "{{ openshift_client }}"           
+  tags: [ aws, openshift_install, openshift_client ]
+
+- name: "Move files: oc, kubectl, openshift-install to /usr/bin"
+  copy: src=/tmp/{{ item }} dest=/usr/bin mode=755 remote_src=True
+  with_items: 
+        - "oc"
+        - "kubectl"
+        - "openshift-install"
+  tags: [ openshift_install, openshift_client ]
+
+- name: "Setup Bash completion for the OpenShift command line utility"
+  command: oc completion bash
+  register: oc_completion_bash
+  tags: [ bash_completion ]
+
+- name: "Insert the content from <oc completion bash> into /etc/bash_completion.d/openshift"
+  lineinfile: path=/etc/bash_completion.d/openshift insertafter=EOF line={{ oc_completion_bash.stdout }} create=true
+  tags: [ bash_completion ]
+
+- name: "AWS: Installing Client" 
+  command: /tmp/awscli-bundle/install -i /usr/local/aws -b /bin/aws
+  tags: [ aws ]
+
+- name: "AWS: Creating Client configuration directory: /root/.aws"
+  file: path=/root/.aws state=directory
+  tags: [ aws ]
+
+- name: "AWS: Generating AWS Client configuration: /root/.aws/credentials"
+  template: src=aws_config.j2 dest=/root/.aws/credentials force=True
+  tags: [ aws ]
+
+- name: Cleaning
+  file: path=/tmp/{{ item }} state=absent
+  with_items:
+        - oc
+        - kubectl
+        - openshift-install
+        - awscli-bundle
+        - "{{ aws_client.filename }}"
+        - "{{ openshift_install.filename }}"
+        - "{{ openshift_client.filename }}"
+  tags: [clean, openshift_install, openshift_client, aws ]
+
+- name: Generating install_openshift.sh script
+  template: src=install_openshift.sh.j2 dest=/root/install_openshift.sh mode=a+x
+  tags: [ openshift_install ]
+
+- name: Running openshift-install in Background
+  command: screen -dm bash -c '/root/install_openshift.sh'
+  tags: [ openshift_install ]
+
+- debug: msg="openshift-install is running in background. ssh bastion and type{{ ':' }} screen -x"

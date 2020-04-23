@@ -1,2 +1,6 @@
+- name: Check if the variable oc_client exists
+  fail: msg="oc_client must indicate where the oc command is located"
+  when: oc_client is not defined or oc_client is none
+
 - name: Logging into OpenShift 
-  command: oc login --username={{ openshift_user }} --password={{ openshift_password }} --insecure-skip-tls-verify --server={{ openshift_api }}
+  command: "{{ oc_client }} login --username={{ openshift_user }} --password={{ openshift_password }} --insecure-skip-tls-verify --server={{ openshift_api }}"

@@ -1,0 +1,6 @@
+- name: "Deleting {{ list_services.json.subcount }} Services"
+  uri: url={{ item.href }} method=POST status_code=200
+       headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+       body_format=json
+       body='{"app_status":"Status for the Red Hat Product Demo System service MULTI-mleal-redhat.com-OCP and Container Storage for Admins-bd12:\\nSorry\u0021 No status info available for MULTI-mleal-redhat.com-OCP and Container Storage for Admins-bd12.\\n If you can not connect your environment, it may have shut down. Try starting the environment and wait for the e-mail confirming that is has started","warning":"Please do not start or stop an environment that you just provisioned.  It will only take longer if you do so.  It is not necessary to use start upon initial provision.  The environment is automatically started upon provisioning.  You will not get your lab quicker if you do this and it may fail to deploy correctly.","areyousure":"yes","action":"Delete"}'
+  with_items: "{{ list_services.json.resources }}"
