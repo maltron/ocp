@@ -22,7 +22,7 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
-     - role: cloudforms_fetch_custom_attributes
+     - role: cloudforms_fetch_custom_attributes_rhpds
      - role: ocp_login
      - role: ocp_create_ossm
      - role: ocp_create_knative

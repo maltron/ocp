@@ -22,7 +22,7 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
-     - role: cloudforms_fetch_custom_attributes
+     - role: cloudforms_fetch_custom_attributes_rhpds
      - role: bastion_init
 
 - name: Updating .ssh/config to easy access
@@ -32,6 +32,7 @@
      target_host_name: "{{ hostvars['localhost']['target_host_name'] }}"
   roles:
      - role: bastion_ssh_config
+       bastion_pattern: "bastion.(.*).open.redhat.com"
 
 - name: Setting up bastion
   hosts: openshift_bastion

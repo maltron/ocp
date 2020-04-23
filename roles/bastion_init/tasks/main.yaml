@@ -1,7 +1,7 @@
 - name: Setting Up Bastion to easy access
   add_host: groups=openshift_bastion hostname={{ target_host_name }}
             ansible_user={{ target_host_user }} ansible_password={{ target_host_password }}
-            openshift_user={{ openshift_user }} openshift_password={{ openshift_password }} openshift_api={{ openshift_api }}
+            # openshift_user={{ openshift_user }} openshift_password={{ openshift_password }} openshift_api={{ openshift_api }}
 
 - name: "Check the existence of a personal public file{{ ':' }} {{ personal_pub_file }}"
   stat: path={{ personal_pub_file }}
