@@ -25,7 +25,7 @@
      - role: cloudforms_fetch_custom_attributes
   
 - name: Logging into an existing OpenShift Cluster
-  hosts: localhost,personal_hosts
+  hosts: personal_hosts
   gather_facts: False
   vars:
      openshift_user: "{{ hostvars['localhost']['openshift_user'] }}"
