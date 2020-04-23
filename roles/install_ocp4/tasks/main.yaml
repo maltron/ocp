@@ -4,7 +4,7 @@
 
 - name: Delete previously created Public and Private Keys
   file: path=/root/.ssh/{{ item }} state=absent
-  with_items:
+  loop:
       - cluster-{{ guid }}-key
       - cluster-{{ guid }}-key.pub
   ignore_errors: True
@@ -15,7 +15,7 @@
 
 - name: "Creating a environment variables on /root/.bashrc"
   lineinfile: path=/root/.bashrc insertafter=EOF line="export {{ item }}"
-  with_items: 
+  loop: 
         - "GUID={{ guid }}"
         - "KUBECONFIG=/root/cluster-{{ guid }}/auth/kubeconfig"
   tags: [ bastion, openshift_install ]
@@ -85,37 +85,39 @@
   tags: [ bastion ]   
 
 - name: Installing all needed packages for Bastion
-  yum: name={{ bastion_packages }} state=present
+  yum: name=screen state=present
   tags: [ bastion ]
 
-- name: "AWS: Deleting previously directory"
-  file: path=/tmp/awscli-bundle state=absent  
-  ignore_errors: True
-  tags: [ aws ]
+- name: Looking for available clients
+  uri: url={{ openshift_latest_url }} return_content=True
+  register: available_content
 
-- name: "Downloading files"
-  get_url: url={{ item.url }} dest=/tmp/{{ item.filename }}
-  with_items: 
-        - "{{ aws_client }}"
-        - "{{ openshift_install }}"
-        - "{{ openshift_client }}"
-  tags: [ aws, openshift_install, openshift_client ]
+- name: Fetching the latest version (OpenShift Client)
+  set_fact: client_filename={{ available_content.content | regex_search(openshift_client_pattern) }}
+
+- name: Fetching the latest version (OpenShift Install)
+  set_fact: install_filename={{ available_content.content | regex_search(openshift_install_pattern) }}
+
+- name: Deleting any existing file
+  file: path=/tmp/{{ item }} state=absent
+  loop: ["{{ client_filename }}", "{{ install_filename }}","{{ aws_client.filename }}","/tmp/awscli-bundle"]
+
+- name: "Downloading Client: {{ client_filename }}"
+  uri: url={{ openshift_latest_url }}{{ client_filename }} dest=/tmp/{{ client_filename }} validate_certs=False
+
+- name: "Downloading Install: {{ install_filename }}"
+  uri: url={{ openshift_latest_url }}{{ install_filename }} dest=/tmp/{{ install_filename }} validate_certs=False
+
+- name: "Downloading AWS Client: {{ aws_client.filename }}"
+  uri: url={{ aws_client.url }} dest=/tmp/{{ aws_client.filename }} validate_certs=False
 
 - name: "Unarchiving files"
-  unarchive: src=/tmp/{{ item.filename }} dest=/tmp/ remote_src=True
-  with_items: 
-        - "{{ aws_client }}"
-        - "{{ openshift_install }}"
-        - "{{ openshift_client }}"           
-  tags: [ aws, openshift_install, openshift_client ]
+  unarchive: src=/tmp/{{ item }} dest=/tmp/ remote_src=True
+  loop: ["{{ client_filename }}","{{ install_filename }}","{{ aws_client.filename }}"]
 
 - name: "Move files: oc, kubectl, openshift-install to /usr/bin"
   copy: src=/tmp/{{ item }} dest=/usr/bin mode=755 remote_src=True
-  with_items: 
-        - "oc"
-        - "kubectl"
-        - "openshift-install"
-  tags: [ openshift_install, openshift_client ]
+  loop: ["oc","kubectl","openshift-install"]
 
 - name: "Setup Bash completion for the OpenShift command line utility"
   command: oc completion bash
@@ -140,14 +142,14 @@
 
 - name: Cleaning
   file: path=/tmp/{{ item }} state=absent
-  with_items:
+  loop:
         - oc
         - kubectl
         - openshift-install
         - awscli-bundle
         - "{{ aws_client.filename }}"
-        - "{{ openshift_install.filename }}"
-        - "{{ openshift_client.filename }}"
+        - "{{ client_filename }}"
+        - "{{ install_filename }}"
   tags: [clean, openshift_install, openshift_client, aws ]
 
 - name: Generating install_openshift.sh script

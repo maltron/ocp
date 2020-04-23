@@ -43,6 +43,9 @@
   hosts: openshift_bastion
   gather_facts: False
   become: True
+  vars_files: 
+      - configuration.yaml
+      - credentials.yaml
   vars:
      aws_key: "{{ hostvars['localhost']['aws_key'] }}"
      aws_secret: "{{ hostvars['localhost']['aws_secret'] }}"
