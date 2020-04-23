@@ -1,4 +1,4 @@
 [localhost]
-127.0.0.1 ansible_connection=local
+127.0.0.1 ansible_connection=local oc_client="/home/example/oc"
 
 [personal_hosts]
