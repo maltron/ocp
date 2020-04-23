@@ -1,0 +1,32 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: "RHPDS: Starting Environment"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files: 
+      - configuration.yaml
+      - credentials.yaml
+  vars:
+     cloudforms_api_url: "{{ rhpds_api_url }}"
+  pre_tasks:
+     - name: "Parameter: username"
+       fail: msg="username is not defined or is empty"
+       when: username is not defined or username is none
+       tags: [ always ]
+
+     - name: "Parameter: password"
+       fail: msg="password is not defined or is empty"
+       when: password is not defined or password is none
+       tags: [ always ]
+  roles: 
+     - role: cloudforms_login
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes
+     - role: cloudforms_start
+       service_name: "{{ rhpds_service_name }}"
+  post_tasks:
+     - name: "Waiting for Bastion to be available: {{ target_host_name }}"
+       wait_for: host={{ target_host_name }} port=22 delay=30 state=started
+
+

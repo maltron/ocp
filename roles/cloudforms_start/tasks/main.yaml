@@ -1,0 +1,6 @@
+- name: "Starting: {{ service_name }}"
+  uri: url={{ service_selected }}
+       method=POST status_code=200 body_format=json
+       headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+       body='{"app_status":"Status","warning":"Please","areyousure":"yes","action":"Start"}'
+      
