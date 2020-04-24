@@ -39,8 +39,6 @@
      - name: Searching for the password 
        set_fact: openshift_password="{{ installation_last_line.stdout | regex_search(".{5}-.{5}-.{5}-.{5}") }}"
 
-     - debug: var=openshift_password
-
      - name: Adding the password into personal_hosts
        add_host: name=passwords openshift_password="{{ installation_last_line.stdout | regex_search(".{5}-.{5}-.{5}-.{5}") }}"
   
