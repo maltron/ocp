@@ -22,4 +22,4 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
-     - role: cloudForms_deprovision     
+     - role: cloudforms_deprovision     
