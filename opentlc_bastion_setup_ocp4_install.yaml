@@ -31,7 +31,7 @@
      - role: bastion_init
 
 - name: Updating .ssh/config to easy access
-  hosts: personal_hosts,localhost
+  hosts: personal_hosts
   gather_facts: True
   vars: 
      target_host_name: "{{ hostvars['localhost']['target_host_name'] }}"

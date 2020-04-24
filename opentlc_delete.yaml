@@ -22,4 +22,23 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
+     - role: bastion_init
+
+- name: Uninstall an existing OpenShift environment
+  hosts: openshift_bastion
+  gather_facts: False
+  become: True
+  vars:
+     guid: "{{ hostvars['localhost']['guid'] }}"
+  tasks:
+    - name: "Uninstalling OpenShift"
+      command: openshift-install destroy cluster --dir /root/cluster-{{ guid }} --log-level=debug
+      ignore_errors: True
+      tags: [ openshift_install ]     
+
+- name: Deprovisioning 
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  roles: 
      - role: cloudforms_deprovision     
