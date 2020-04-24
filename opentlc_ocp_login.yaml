@@ -41,20 +41,15 @@
 
      - debug: var=openshift_password
 
-   #   - name: Adding the password into personal_hosts
-   #     add_host: name=personal_hosts openshift_password="{{ installation_last_line.stdout | regex_search(".{5}-.{5}-.{5}-.{5}") }}"
+     - name: Adding the password into personal_hosts
+       add_host: name=passwords openshift_password="{{ installation_last_line.stdout | regex_search(".{5}-.{5}-.{5}-.{5}") }}"
   
 - name: Logging into an existing OpenShift Cluster
   hosts: personal_hosts
   gather_facts: False
-#   tasks: 
-#      - copy: content={{ hostvars }} dest=/tmp/hostvars.log
-   #   - debug: var=guid
-   #   - debug: var=openshift_password
-   #   - debug: var=openshift_api
   roles:
      - role: ocp_login
        guid: "{{ hostvars['localhost']['guid'] }}"
        openshift_user: "kubeadmin"
-       openshift_password: "{{ hostvars['bastion.'+guid+top_level_domain]['openshift_password'] }}"
+       openshift_password: "{{ hostvars['passwords']['openshift_password'] }}"
        openshift_api: "https://api.cluster-{{ guid }}.{{ guid }}{{ hostvars['localhost']['top_level_domain'] }}:6443"
