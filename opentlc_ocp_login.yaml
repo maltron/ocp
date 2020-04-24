@@ -53,7 +53,7 @@
   
 - name: Logging into an existing OpenShift Cluster
   hosts: personal_hosts
-  gather_facts: False
+  gather_facts: True
   roles:
      - role: ocp_login
        guid: "{{ hostvars['localhost']['guid'] }}"
