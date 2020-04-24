@@ -3,7 +3,7 @@
 - name: "OPENTLC: Deleting all Environments"
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: True
   vars_files: 
       - configuration.yaml
       - credentials.yaml
@@ -22,6 +22,7 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes_opentlc
      - role: bastion_init
 
 - name: Uninstall an existing OpenShift environment
