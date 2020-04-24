@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: "RHPDS: Starting Environment"
+- name: "OPENTLC: Starting Environment"
   hosts: localhost
   connection: local
   gather_facts: False
@@ -8,7 +8,7 @@
       - configuration.yaml
       - credentials.yaml
   vars:
-     cloudforms_api_url: "{{ rhpds_api_url }}"
+     cloudforms_api_url: "{{ opentlc_api_url }}"
   pre_tasks:
      - name: "Parameter: username"
        fail: msg="username is not defined or is empty"
@@ -22,9 +22,9 @@
   roles: 
      - role: cloudforms_login
      - role: cloudforms_check_existing_service
-     - role: cloudforms_fetch_custom_attributes_rhpds
+     - role: cloudforms_fetch_custom_attributes_opentlc
      - role: cloudforms_start
-       service_name: "{{ rhpds_service_name }}"
+       service_name: "{{ opentlc_service_name }}"
   post_tasks:
      - name: "Waiting for Bastion to be available: {{ target_host_name }}"
        wait_for: host={{ target_host_name }} port=22 delay=30 state=started
