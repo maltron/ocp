@@ -54,15 +54,22 @@
 - name: Logging into an existing OpenShift Cluster
   hosts: personal_hosts
   gather_facts: True
+  vars:
+     openshift_password: "{{ hostvars['passwords']['openshift_password'] }}"
   roles:
      - role: ocp_login
        guid: "{{ hostvars['localhost']['guid'] }}"
-       openshift_user: "kubeadmin"
-       openshift_password: "{{ hostvars['passwords']['openshift_password'] }}"
+       openshift_user: "kubeadmin"       
        openshift_api: "https://api.cluster-{{ guid }}.{{ guid }}{{ hostvars['localhost']['top_level_domain'] }}:6443"
   post_tasks: 
      - name: (For MacOS users) it copy the password into the clipboard
-       shell: echo '{{ hostvars['passwords']['openshift_password'] }}' | pbcopy
+       shell: echo '{{ openshift_password }}' | pbcopy
        when: ansible_distribution == "MacOSX"
 
-
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+     openshift_password: "{{ hostvars['passwords']['openshift_password'] }}"
+  tasks: 
+     - debug: msg="OpenShift Login Username{{ ':' }} kubeadmin Password{{ ':' }} {{ openshift_password }}"
