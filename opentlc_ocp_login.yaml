@@ -60,3 +60,9 @@
        openshift_user: "kubeadmin"
        openshift_password: "{{ hostvars['passwords']['openshift_password'] }}"
        openshift_api: "https://api.cluster-{{ guid }}.{{ guid }}{{ hostvars['localhost']['top_level_domain'] }}:6443"
+  post_tasks: 
+     - name: (For MacOS users) it copy the password into the clipboard
+       shell: echo '{{ hostvars['passwords']['openshift_password'] }}' | pbcopy
+       when: ansible_distribution == "MacOSX"
+
+
