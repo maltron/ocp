@@ -1,1 +1,2 @@
 openshift-install create cluster --dir /root/cluster-{{ guid }} --log-level=debug
+cd /root/ocp && echo "something" > .vault_pass && ansible-playbook ocp_day2.yaml

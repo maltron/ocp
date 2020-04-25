@@ -55,6 +55,9 @@
   pre_tasks: 
     - name: Inserting public key into /root/.ssh/authorized_keys
       copy: dest=/root/.ssh/authorized_keys content={{ public_key }}  
+
+    - name: Cloning Ansible Playbooks for installing OCP
+      git: repo=https://github.com/maltron/ocp.git dest=/root/ocp
   roles:
      - install_ocp4
 
