@@ -1,0 +1,25 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: "OPENTLC: Extending Runtime Environment"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files: 
+      - configuration.yaml
+      - credentials.yaml
+  vars:
+     cloudforms_api_url: "{{ opentlc_api_url }}"
+  pre_tasks:
+     - name: "Parameter: username"
+       fail: msg="username is not defined or is empty"
+       when: username is not defined or username is none
+       tags: [ always ]
+
+     - name: "Parameter: password"
+       fail: msg="password is not defined or is empty"
+       when: password is not defined or password is none
+       tags: [ always ]
+  roles: 
+     - role: cloudforms_login
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_extend_runtime
