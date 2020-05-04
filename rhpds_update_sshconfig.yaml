@@ -32,4 +32,4 @@
      target_host_name: "{{ hostvars['localhost']['target_host_name'] }}"
   roles:
      - role: bastion_ssh_config
-       bastion_pattern: "bastion.(.*).open.redhat.com"
+       bastion_pattern: "bastion.(.*).example.opentlc.com"
