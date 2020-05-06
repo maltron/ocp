@@ -1,0 +1,7 @@
+Host bastion
+        User root
+        Hostname bastion.ce83.sandbox499.opentlc.com
+
+Host ocp4
+        User root
+        Hostname bastion.maltron-83b6.example.opentlc.com
