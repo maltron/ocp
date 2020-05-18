@@ -5,4 +5,4 @@
   yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
 
 - name: Installing Git 2 All
-  yum: name=git2u-all state=present
+  yum: name=git224-all state=present
