@@ -39,6 +39,17 @@
      - role: bastion_ssh_config
        bastion_pattern: "bastion(.*).sandbox\\d{1,4}.opentlc.com"
 
+- name: Preparing Bastion 
+  hosts: openshift_bastion
+  gather_facts: False
+  become: True
+  vars_files: 
+      - configuration.yaml
+      - credentials.yaml
+  roles:
+     - install_docker_ce
+     - install_git2
+
 - name: Setting up bastion and Install OpenShift
   hosts: openshift_bastion
   gather_facts: False

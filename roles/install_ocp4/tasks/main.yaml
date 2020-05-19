@@ -81,7 +81,7 @@
   tags: [ bastion ]
 
 - name: Installing Git 2 All
-  yum: name=git2u-all state=present   
+  yum: name=git224-all state=present   
   tags: [ bastion ]   
 
 - name: Installing all needed packages for Bastion
