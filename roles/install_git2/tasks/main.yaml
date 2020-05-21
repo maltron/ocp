@@ -2,7 +2,8 @@
   yum: name=git state=absent
 
 - name: Installing Git 2 
-  yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
+  yum: name={{ item }} state=present
+  loop: [ "https://repo.ius.io/ius-release-el7.rpm", "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" ]
 
 - name: Installing Git 2 All
   yum: name=git224-all state=present
