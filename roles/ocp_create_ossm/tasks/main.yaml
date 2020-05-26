@@ -1,10 +1,10 @@
 - name: "Create all the necessary Projects/Namespaces needed"
-  command: oc new-project {{ item }}
-  with_items: [istio-system]
+  command: "{{ oc_client }} new-project {{ item }}"
+  with_items: [ istio-system ]
   ignore_errors: True
 
 - name: "Create all the necessary Operators needed"
-  shell: "{{ item }} | oc create -f -"
+  shell: "{{ item }} | {{ oc_client }} create -f -"
   with_items:
       - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"elasticsearch-operator","namespace":"openshift-operators"},"spec":{"channel":"4.3","installPlanApproval":"Automatic","name":"elasticsearch-operator","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
       - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"jaeger-product","namespace":"openshift-operators"},"spec":{"channel":"stable","installPlanApproval":"Automatic","name":"jaeger-product","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
@@ -14,7 +14,7 @@
   tags: [ operator ]
 
 - name: "Waiting for Istio System to be ready"
-  command: oc get clusterserviceversion/servicemeshoperator.{{ servicemesh_version }} --namespace istio-system -o jsonpath='{.status.phase}'
+  command: "{{ oc_client }} get clusterserviceversion/servicemeshoperator.{{ servicemesh_version }} --namespace istio-system -o jsonpath='{.status.phase}'"
   register: operator_status
   until: operator_status.rc == 0 and operator_status.stdout == "Succeeded"
   retries: 5
@@ -22,10 +22,10 @@
   ignore_errors: True
 
 - name: "Creating Istio Control Plane on istio-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"istio-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | oc create -n istio-system -f -
+  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"istio-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n istio-system -f -
   ignore_errors: True
 
 - name: "Creating Istio Service Mesh Member Roll on istio-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshMemberRoll","metadata":{"name":"default","namespace":"istio-system"},"spec":{"members":["your-project","another-of-your-projects"]}}' | oc create -n istio-system -f -
+  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshMemberRoll","metadata":{"name":"default","namespace":"istio-system"},"spec":{"members":["your-project","another-of-your-projects"]}}' | {{ oc_client }} create -n istio-system -f -
   ignore_errors: True              
 
