@@ -1,8 +1,18 @@
+- name: Looking for available clients
+  uri: url={{ download_page }} return_content=True
+  register: available_content
+
+- name: Fetching filename suffix
+  set_fact: filename_suffix={{ available_content.content | regex_search(download_pattern) }}
+
+- name: Defining the final URL for download
+  set_fact: url="{{ download_suffix }}{{ filename_suffix }}"
+
 - name: "Creating directory: {{ directory }}"
   file: path={{ directory }} state=directory 
 
 - name: "Defining filename: {{ directory }}/{{ application }}.{{ extension }}"
-  set_fact: filename="{{ directory }}/{{ application }}.{{ extension }}"
+  set_fact: filename="{{ directory }}/{{ application }}.tar.gz"
   tags: [ untar ]
 
 - name: "Deleting any previously file downloaded: {{ filename }}"

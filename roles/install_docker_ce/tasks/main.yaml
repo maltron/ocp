@@ -1,8 +1,8 @@
-- name: "Installing Python PIP"
-  yum: name=python-pip state=latest
+# - name: "Installing Python PIP"
+#   yum: name=python-pip state=latest
 
-- name: "Library for Python: docker-py"
-  command: pip install docker-py
+# - name: "Library for Python: docker-py"
+#   command: pip install docker-py
 
 - name: "Docker CE: Adding Repository"
   get_url: url=https://download.docker.com/linux/centos/docker-ce.repo

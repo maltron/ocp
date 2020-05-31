@@ -36,8 +36,11 @@
 
 - name: Setting up bastion
   hosts: openshift_bastion
-  gather_facts: False
+  gather_facts: True
   become: True
+  vars:
+     client_directory: "{{ ansible_env.HOME }}/k8s/client"
+     runtime_directory: "{{ ansible_env.HOME }}/k8s/runtime"  
   vars_files: 
       - credentials.yaml
   pre_tasks: 
@@ -46,4 +49,29 @@
   roles:
      - install_docker_ce
      - install_git2
+     - role: variables
+       env: "JAVA_HOME={{ runtime_directory }}/java MAVEN_HOME={{ client_directory }}/maven GRADLE_HOME={{ client_directory }}/gradle"
+       executable_directory: "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${GRADLE_HOME}/bin"
+       tags: [ java, maven, gradle ]
+     - role: install_fetch_targz
+       download_page: "https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html"
+       download_suffix: "http://download.oracle.com/otn-pub/java/jdk/"
+       download_pattern: "(8u\\d{3}-.{3}\\/.{32}\\/jdk-8u\\d{3}-linux-x64.tar.gz)"
+       application: "java"
+       headers: {"Cookie":"oraclelicense=accept-securebackup-cookie"}
+       directory: "{{ runtime_directory }}"
+       tags: [ java ]
+     - role: install_fetch_targz
+       download_page: "http://maven.apache.org/download.cgi"
+       download_suffix: "http://mirror.nbtelecom.com.br/apache/maven/"
+       download_pattern: "maven-\\d\/\\d.\\d.\\d\/binaries\/(apache-maven-\\d.\\d.\\d-bin.tar.gz)"
+       application: "maven"
+       directory: "{{ client_directory }}"
+       tags: [ maven ]
+     - role: install_targz
+       application: "gradle"
+       extension: "zip"
+       directory: "{{ client_directory }}"
+       url: "https://downloads.gradle-dn.com/distributions/gradle-6.3-bin.zip"
+       tags: [ gradle ]     
 
