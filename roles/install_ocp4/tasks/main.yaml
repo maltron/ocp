@@ -37,53 +37,6 @@
   copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
   tags: [ bastion ]
 
-- name: Installing Epel release
-  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=present
-  tags: [ bastion ]      
-
-- name: Installing Python PIP
-  yum: name=python-pip state=latest
-  tags: [ bastion ]
-
-- name: "Library for Python: docker-py"
-  command: pip install docker-py 
-  tags: [ bastion ]
-
-- name: "Docker CE: Adding Repository"
-  get_url: url=https://download.docker.com/linux/centos/docker-ce.repo
-            dest=/etc/yum.repos.d
-  tags: [ bastion ]
-
-- name: Removing Original Docker
-  yum: name=[docker,docker-ce,docker-common,docker-client] state=absent
-  tags: [ bastion ]
-
-- name: Installing Docker CE
-  yum: name=docker-ce state=present
-  tags: [ bastion ]
-
-- name: Starting Docker CE Service
-  service: name=docker state=started enabled=yes      
-  tags: [ bastion ]
-
-- name: "If docker credentials are provided, docker login: docker_registry, docker_username, docker_password"
-  docker_login: registry={{ docker_registry }} username={{ docker_username }} password={{ docker_password }}
-  when: docker_registry is defined and docker_registry is not none and docker_username is defined and docker_username is not none and docker_password is defined and docker_password is not none
-  become: True
-  tags: [ bastion ]
-
-- name: Removing Original Git
-  yum: name=git state=absent
-  tags: [ bastion ]
-
-- name: Installing Git 2 
-  yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
-  tags: [ bastion ]
-
-- name: Installing Git 2 All
-  yum: name=git224-all state=present   
-  tags: [ bastion ]   
-
 - name: Installing all needed packages for Bastion
   yum: name=screen state=present
   tags: [ bastion ]

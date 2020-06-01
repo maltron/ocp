@@ -1,0 +1,7 @@
+- name: "Adding an Environment variable: {{ env}}"
+  lineinfile: path={{ ansible_env.HOME }}/.bashrc insertafter=EOF line="export {{ env }}"
+  when: env is defined and env is not none
+
+- name: "Adding executable into the PATH: {{ executable_directory }}"
+  lineinfile: path={{ ansible_env.HOME }}/.bashrc insertafter=EOF line="export PATH=${PATH}:{{ executable_directory }}"
+  when: executable_directory is defined and executable_directory is not none
