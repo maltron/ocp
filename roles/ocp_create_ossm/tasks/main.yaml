@@ -13,8 +13,21 @@
   ignore_errors: True
   tags: [ operator ]
 
+- name: "Fetching the Service Mesh Operator Version"
+  command: "{{ oc_client }} get clusterserviceversion --output jsonpath='{.items[*].metadata.name}' --namespace istio-system"
+  register: clusterserviceversion
+  until: clusterserviceversion.rc == 0 and clusterserviceversion.stdout|regex_search(servicemesh_pattern)
+  retries: 20
+  delay: 20
+  ignore_errors: True
+  tags: [ operator ]
+
+- name: "Service Mesh Found: {{ clusterserviceversion.stdout | regex_search(servicemesh_pattern) }}"
+  set_fact: servicemeshoperatorversion={{ clusterserviceversion.stdout | regex_search(servicemesh_pattern) }}
+  tags: [ operator ]
+
 - name: "Waiting for Istio System to be ready"
-  command: "{{ oc_client }} get clusterserviceversion/servicemeshoperator.{{ servicemesh_version }} --namespace istio-system -o jsonpath='{.status.phase}'"
+  command: "{{ oc_client }} get clusterserviceversion/{{ servicemeshoperatorversion }} --namespace istio-system -o jsonpath='{.status.phase}'"
   register: operator_status
   until: operator_status.rc == 0 and operator_status.stdout == "Succeeded"
   retries: 5
