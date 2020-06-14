@@ -1,0 +1,10 @@
+#30 5 * * 1-5 cd /root/ocp && ./opentlc_create.yaml && sleep 10m && ./opentlc_devpreview_ocp44.sh; sleep 50m; ./opentlc_ocp_login.yaml
+#30 6 * * 1-5 cd /root/ocp && ./opentlc_create.yaml -e cloudforms_region=emea_sandboxes_gpte && sleep 10m && ./opentlc_devpreview_ocp44.sh; sleep 50m; ./opentlc_ocp_login.yaml
+30 5 * * 1-5 cd /root/ocp && ./rhpds_delete.yaml; ./opentlc_delete.yaml; sleep 5m; ./rhpds_create.yaml; sleep 70m; ./rhpds_bastion_setup.yaml; ./rhpds_ocp_login.yaml; ./ocp_day2.yaml
+30 6 * * 1-5 cd /root/ocp && ./rhpds_create.yaml -e cloudforms_region=emea_gpte; sleep 70m; ./rhpds_bastion_setup.yaml; ./rhpds_ocp_login.yaml; ./ocp_day2.yaml
+00 11 * * * cd /root/ocp && ./opentlc_extend_runtime.yaml
+00 11 * * * cd /root/ocp && ./rhpds_extend_runtime.yaml
+00 17 * * * cd /root/ocp && ./opentlc_start.yaml
+00 17 * * * cd /root/ocp && ./rhpds_start.yaml
+30 21 * * * cd /root/ocp && ./rhpds_delete.yaml
+30 21 * * * cd /root/ocp && ./opentlc_delete.yaml
