@@ -48,7 +48,7 @@
       copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
   roles:
      - install_docker_ce
-     - install_git2
+   #   - install_git2
      - role: variables
       #  env: "JAVA_HOME={{ runtime_directory }}/java MAVEN_HOME={{ client_directory }}/maven GRADLE_HOME={{ client_directory }}/gradle"
        env: "GRADLE_HOME={{ client_directory }}/gradle"
