@@ -2,5 +2,10 @@
   fail: msg="oc_client must indicate where the oc command is located"
   when: oc_client is not defined or oc_client is none
 
+# - debug: var=oc_client
+# - debug: var=openshift_user
+# - debug: var=openshift_password
+# - debug: var=openshift_api
+
 - name: Logging into OpenShift 
   command: "{{ oc_client }} login --username={{ openshift_user }} --password={{ openshift_password }} --insecure-skip-tls-verify --server={{ openshift_api }}"
