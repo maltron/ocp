@@ -13,11 +13,11 @@
 
 # - debug: var=ssh_host_user_and_password 
 
-- set_fact: target_host_user="{{ ssh_host_user_and_password | regex_replace("\`(.*)$", "") }}"
+- set_fact: target_host_user="{{ ssh_host_user_and_password | regex_replace("\`(.*)$", "") | regex_replace("\'(.*)$", "") }}"
 - set_fact: target_host_password="{{ ssh_host_user_and_password | regex_replace("^(.*)\'[ ]and[ ]the[ ]password[ ]\'", "") | regex_replace("\'[ ]when[ ]prompted[.]$", "") }}"
 
-- name: SSH Target Host (targetHost)
-  set_fact: target_host_name={{ custom_attributes|json_query("json.custom_attributes[?name=='targetHost'].value")|first }}
+- name: SSH Target Host (Environment Info 9)
+  set_fact: target_host_name={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 9'].value")|first| regex_replace("^(.*)[@]", "") }}
 
 # - debug: var=target_host_name
 
