@@ -1,7 +1,7 @@
 # RHPDS: CloudForms API URL
 rhpds_api_url: "https://rhpds.redhat.com"
-rhpds_service_name: "OpenShift Workshop 4.4"
-rhpds_service_catalogue: "/api/service_catalogs/30000000000032/service_templates/30000000000594"
+rhpds_service_name: "OpenShift Workshop 4.5"
+rhpds_service_catalogue: "/api/service_catalogs/30000000000032/service_templates/30000000000448"
 
 # OPENTLC: CloudForms API URL
 opentlc_api_url: "https://labs.opentlc.com"
