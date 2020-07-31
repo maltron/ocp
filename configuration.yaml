@@ -37,4 +37,4 @@ personal_pub_file: "{{ ansible_env.HOME }}/.ssh/maltron.pub"
 google_chrome: "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome"
 
 # Region used to provisioning: na_gpte, emea_gpte, apac_gpte
-cloudforms_region: na_gpte
+cloudforms_region: na2_gpte
