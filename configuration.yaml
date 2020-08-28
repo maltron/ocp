@@ -8,9 +8,6 @@ opentlc_api_url: "https://labs.opentlc.com"
 opentlc_service_name: "OpenShift 4 Installation Lab"
 opentlc_service_catalogue: "/api/service_catalogs/20000000000040/service_templates/20000000000619"
 
-# OpenShift 4 Pull Secret File
-openshift_pull_secret_file: "/Users/mauricio/Documents/openshift-maltron-pull-secret.txt"
-
 # OpenShift Version 
 # openshift_version: "4.3.13"
 # https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-4.3.13.tar.gz
@@ -27,10 +24,6 @@ openshift_install_pattern: "(openshift-install-linux-\\d{1,3}.\\d{1,3}.\\d{1,3}.
 # AWS Information
 aws_region: "us-east-2"
 aws_client: { url: "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip", filename: "awscli-bundle.zip" }
-
-# (Optional) A custom public key file with all your needed public keys
-#            which it's going to be inserted into Bastion's authorized_key
-personal_pub_file: "{{ ansible_env.HOME }}/.ssh/maltron.pub"
 
 # (Optional) If you want to automatically open the browser
 #            provide the location of your browser
