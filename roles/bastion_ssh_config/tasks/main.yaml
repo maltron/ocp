@@ -1,5 +1,5 @@
 #         regexp="^        Hostname bastion(.*)example.opentlc.com"
-- name: Replacing the name of the bastion for OCP4
+- name: "Update Bastion hostname: {{ target_host_name }}"
   replace: path={{ ansible_env.HOME }}/.ssh/config
           regexp="^        Hostname {{ bastion_pattern }}"
           replace="        Hostname {{ target_host_name }}"     
