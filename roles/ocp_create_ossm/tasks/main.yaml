@@ -35,7 +35,7 @@
   ignore_errors: True
 
 - name: "Creating Istio Control Plane on istio-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"istio-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n istio-system -f -
+  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"istio-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false, "ior_enabled":"true"}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n istio-system -f -
   ignore_errors: True
 
 - name: "Creating Istio Service Mesh Member Roll on istio-system namespace"
