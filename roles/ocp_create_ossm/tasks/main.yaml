@@ -1,6 +1,6 @@
 - name: "Create all the necessary Projects/Namespaces needed"
   command: "{{ oc_client }} new-project {{ item }}"
-  with_items: [ istio-system ]
+  with_items: [ ossm-system ]
   ignore_errors: True
 
 - name: "Create all the necessary Operators needed"
@@ -14,7 +14,7 @@
   tags: [ operator ]
 
 - name: "Fetching the Service Mesh Operator Version"
-  command: "{{ oc_client }} get clusterserviceversion --output jsonpath='{.items[*].metadata.name}' --namespace istio-system"
+  command: "{{ oc_client }} get clusterserviceversion --output jsonpath='{.items[*].metadata.name}' --namespace ossm-system"
   register: clusterserviceversion
   until: clusterserviceversion.rc == 0 and clusterserviceversion.stdout|regex_search(servicemesh_pattern)
   retries: 20
@@ -27,18 +27,18 @@
   tags: [ operator ]
 
 - name: "Waiting for Istio System to be ready"
-  command: "{{ oc_client }} get clusterserviceversion/{{ servicemeshoperatorversion }} --namespace istio-system -o jsonpath='{.status.phase}'"
+  command: "{{ oc_client }} get clusterserviceversion/{{ servicemeshoperatorversion }} --namespace ossm-system -o jsonpath='{.status.phase}'"
   register: operator_status
   until: operator_status.rc == 0 and operator_status.stdout == "Succeeded"
   retries: 5
   delay: 60
   ignore_errors: True
 
-- name: "Creating Istio Control Plane on istio-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"istio-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false, "ior_enabled":"true"}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n istio-system -f -
+- name: "Creating Istio Control Plane on ossm-system namespace"
+  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"ossm-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false, "ior_enabled":"true"}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n ossm-system -f -
   ignore_errors: True
 
-- name: "Creating Istio Service Mesh Member Roll on istio-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshMemberRoll","metadata":{"name":"default","namespace":"istio-system"},"spec":{"members":["your-project","another-of-your-projects"]}}' | {{ oc_client }} create -n istio-system -f -
+- name: "Creating Istio Service Mesh Member Roll on ossm-system namespace"
+  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshMemberRoll","metadata":{"name":"default","namespace":"ossm-system"},"spec":{"members":["your-project","another-of-your-projects"]}}' | {{ oc_client }} create -n ossm-system -f -
   ignore_errors: True              
 
