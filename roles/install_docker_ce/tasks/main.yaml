@@ -8,12 +8,15 @@
   get_url: url=https://download.docker.com/linux/centos/docker-ce.repo
            dest=/etc/yum.repos.d
 
+- name: Fixing a problem in RHEL, unable to replace variable $releaseserver 
+  replace: path=/etc/yum.repos.d/docker-ce.repo regexp="[$]releasever" replace="7"
+
 - name: Removing Original Docker
   yum: name=[docker,docker-ce,docker-common,docker-client,containerd.io] state=absent
 
-- name: Installing ContainerD.IO 
-  yum: name=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
-       state=present
+#- name: Installing ContainerD.IO 
+#  yum: name=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+#       state=present
 
 - name: Installing Docker CE
   yum: name=docker-ce state=present
