@@ -1,0 +1,33 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+      odo_url: "https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/"
+      operating_system: "darwin"
+  tasks: 
+      - name: Looking for available clients
+        uri: url={{ odo_url }} return_content=True
+        register: available_content
+
+      - name: Fetching the latest version for "{{ operating_system }}"
+        set_fact: client_filename={{ available_content.content | regex_search("(odo-"+operating_system+"-amd64.tar.gz)") }}
+
+      - name: Deleting any existing file
+        file: path={{ item }} state=absent
+        with_items: ["odo"]
+
+      - name: "Downloading: {{ client_filename }}"
+        uri: url={{ odo_url }}{{ client_filename }} dest=./{{ client_filename }} validate_certs=False
+
+      - name: "Unarchiving: {{ client_filename }}"
+        unarchive: src=./{{ client_filename }} dest=./
+
+      - name: Making the file executable
+        file: name=./odo mode="a+x"
+
+      - name: Cleaning up
+        file: name={{ item }} state=absent
+        with_items: ["{{ client_filename }}"]
+
