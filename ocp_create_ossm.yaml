@@ -1,0 +1,8 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: "OpenShift Service Mesh"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  roles: 
+     - role: ocp_create_ossm

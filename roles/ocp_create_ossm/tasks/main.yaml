@@ -1,20 +1,14 @@
-- name: "Create all the necessary Projects/Namespaces needed"
-  command: "{{ oc_client }} new-project {{ item }}"
-  with_items: [ ossm-system ]
+- name: "Create Project/Namespace {{ servicemesh_namespace }}"
+  command: "{{ oc_client }} new-project {{ servicemesh_namespace }}"
   ignore_errors: True
 
 - name: "Create all the necessary Operators needed"
-  shell: "{{ item }} | {{ oc_client }} create -f -"
-  with_items:
-      - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"elasticsearch-operator","namespace":"openshift-operators"},"spec":{"channel":"4.3","installPlanApproval":"Automatic","name":"elasticsearch-operator","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
-      - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"jaeger-product","namespace":"openshift-operators"},"spec":{"channel":"stable","installPlanApproval":"Automatic","name":"jaeger-product","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
-      - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"kiali-ossm","namespace":"openshift-operators"},"spec":{"channel":"stable","installPlanApproval":"Automatic","name":"kiali-ossm","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
-      - echo '{"apiVersion":"operators.coreos.com\/v1alpha1","kind":"Subscription","metadata":{"name":"servicemeshoperator","namespace":"openshift-operators"},"spec":{"channel":"1.0","installPlanApproval":"Automatic","name":"servicemeshoperator","source":"redhat-operators","sourceNamespace":"openshift-marketplace"}}'
+  command: "{{ oc_client }} apply --filename={{ inventory_dir }}/roles/ocp_create_ossm/defaults/operators.yaml"
   ignore_errors: True
   tags: [ operator ]
 
 - name: "Fetching the Service Mesh Operator Version"
-  command: "{{ oc_client }} get clusterserviceversion --output jsonpath='{.items[*].metadata.name}' --namespace ossm-system"
+  command: "{{ oc_client }} get clusterserviceversion --output jsonpath='{.items[*].metadata.name}' --namespace {{ servicemesh_namespace }}"
   register: clusterserviceversion
   until: clusterserviceversion.rc == 0 and clusterserviceversion.stdout|regex_search(servicemesh_pattern)
   retries: 20
@@ -27,7 +21,7 @@
   tags: [ operator ]
 
 - name: "Waiting for Istio System to be ready"
-  command: "{{ oc_client }} get clusterserviceversion/{{ servicemeshoperatorversion }} --namespace ossm-system -o jsonpath='{.status.phase}'"
+  command: "{{ oc_client }} get clusterserviceversion/{{ servicemeshoperatorversion }} --namespace {{ servicemesh_namespace }} -o jsonpath='{.status.phase}'"
   register: operator_status
   until: operator_status.rc == 0 and operator_status.stdout == "Succeeded"
   retries: 5
@@ -35,10 +29,5 @@
   ignore_errors: True
 
 - name: "Creating Istio Control Plane on ossm-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshControlPlane","metadata":{"name":"basic-install","namespace":"ossm-system"},"spec":{"istio":{"gateways":{"istio-egressgateway":{"autoscaleEnabled":false},"istio-ingressgateway":{"autoscaleEnabled":false, "ior_enabled":"true"}},"mixer":{"policy":{"autoscaleEnabled":false},"telemetry":{"autoscaleEnabled":false}},"pilot":{"autoscaleEnabled":false,"traceSampling":100},"kiali":{"enabled":true},"grafana":{"enabled":true},"tracing":{"enabled":true,"jaeger":{"template":"all-in-one"}}}}}' | {{ oc_client }} create -n ossm-system -f -
+  command: "{{ oc_client }} apply --filename={{ inventory_dir }}/roles/ocp_create_ossm/defaults/ossm.yaml --namespace {{ servicemesh_namespace }}"
   ignore_errors: True
-
-- name: "Creating Istio Service Mesh Member Roll on ossm-system namespace"
-  shell: echo '{"apiVersion":"maistra.io\/v1","kind":"ServiceMeshMemberRoll","metadata":{"name":"default","namespace":"ossm-system"},"spec":{"members":["your-project","another-of-your-projects"]}}' | {{ oc_client }} create -n ossm-system -f -
-  ignore_errors: True              
-

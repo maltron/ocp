@@ -1,1 +1,2 @@
 servicemesh_pattern: "(servicemeshoperator.v.*)"
+servicemesh_namespace: "ossm-system"
