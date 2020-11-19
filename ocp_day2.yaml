@@ -1,9 +1,0 @@
-#!/usr/bin/env ansible-playbook
----
-- name: "OpenShift: Day 2 Setup"
-  hosts: localhost
-  connection: local
-  gather_facts: False
-  roles: 
-     - role: ocp_create_ossm
-     - role: ocp_create_knative
