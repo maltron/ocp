@@ -8,16 +8,16 @@
 
 # - debug: var=openshift_api
 
-- name: Fetching SSH Access information (Environment Info 010)
-  set_fact: ssh_host_user_and_password={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 010'].value")|first|regex_replace("^Make sure you use the username \'", "") }}
+- name: Fetching SSH Access information (Environment Info 008)
+  set_fact: ssh_host_user_and_password={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 008'].value")|first|regex_replace("^Make sure you use the username \'", "") }}
 
 # - debug: var=ssh_host_user_and_password 
 
 - set_fact: target_host_user="{{ ssh_host_user_and_password | regex_replace("\`(.*)$", "") | regex_replace("\'(.*)$", "") }}"
 - set_fact: target_host_password="{{ ssh_host_user_and_password | regex_replace("^(.*)\'[ ]and[ ]the[ ]password[ ]\'", "") | regex_replace("\'[ ]when[ ]prompted[.]$", "") }}"
 
-- name: SSH Target Host (Environment Info 009)
-  set_fact: target_host_name={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 009'].value")|first| regex_replace("^(.*)[@]", "") }}
+- name: SSH Target Host (Environment Info 007)
+  set_fact: target_host_name={{ custom_attributes|json_query("json.custom_attributes[?name=='Environment Info 007'].value")|first| regex_replace("^(.*)[@]", "") }}
 
 # - debug: var=target_host_name
 
