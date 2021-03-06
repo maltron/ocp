@@ -32,7 +32,7 @@
      target_host_name: "{{ hostvars['localhost']['target_host_name'] }}"
   roles:
      - role: bastion_ssh_config
-       bastion_pattern: "bastion.(.*).example.opentlc.com"
+       bastion_pattern: "bastion\\.[0-9a-z]{1,4}\\.sandbox\\d{1,4}\\.opentlc.com"
 
 - name: Setting up bastion
   hosts: openshift_bastion
