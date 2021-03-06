@@ -26,5 +26,5 @@ aws_client: { url: "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip", filenam
 #            provide the location of your browser
 google_chrome: "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome"
 
-# Region used to provisioning: na_gpte, emea_gpte, apac_gpte
-cloudforms_region: na2_gpte
+# Region used to provisioning: na_sandbox_gpte, emea_sandbox_gpte, apac_sandbox_gpte
+cloudforms_region: na_sandbox_gpte

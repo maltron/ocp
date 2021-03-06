@@ -1,5 +1,5 @@
 30 5 * * 1-5 cd /root/ocp && ./opentlc_create.yaml && sleep 12m && ./opentlc_bastion_setup_ocp4_install.yaml; sleep 70m; ./opentlc_ocp_login.yaml; oc adm upgrade --to-latest; ./ocp_day2.yaml
-30 6 * * 1-5 cd /root/ocp && ./opentlc_create.yaml -e cloudforms_region=emea_sandboxes_gpte && sleep 12m && ./opentlc_bastion_setup_ocp4_install.yaml; sleep 70m; ./opentlc_ocp_login.yaml; oc adm upgrade --to-latest; ./ocp_day2.yaml
+30 6 * * 1-5 cd /root/ocp && ./opentlc_create.yaml -e cloudforms_region=emea_sandbox_gpte && sleep 12m && ./opentlc_bastion_setup_ocp4_install.yaml; sleep 70m; ./opentlc_ocp_login.yaml; oc adm upgrade --to-latest; ./ocp_day2.yaml
 #30 5 * * 1-5 cd /root/ocp && ./rhpds_delete.yaml; ./opentlc_delete.yaml; sleep 5m; ./rhpds_create.yaml; sleep 70m; ./rhpds_bastion_setup.yaml; ./rhpds_ocp_login.yaml; oc adm upgrade --to-latest; ./ocp_day2.yaml
 #30 6 * * 1-5 cd /root/ocp && ./rhpds_create.yaml -e cloudforms_region=emea_gpte; sleep 70m; ./rhpds_bastion_setup.yaml; ./rhpds_ocp_login.yaml; oc adm upgrade --to-latest; ./ocp_day2.yaml
 00 11 * * * cd /root/ocp && ./opentlc_extend_runtime.yaml
