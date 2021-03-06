@@ -47,14 +47,14 @@
     - name: Inserting public key into /root/.ssh/authorized_keys
       copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
   roles:
-     - install_docker_ce
+    #  - install_docker_ce
      - install_dotnet
    #   - install_git2
-     - role: variables
-      #  env: "JAVA_HOME={{ runtime_directory }}/java MAVEN_HOME={{ client_directory }}/maven GRADLE_HOME={{ client_directory }}/gradle"
-       env: "GRADLE_HOME={{ client_directory }}/gradle"
-       executable_directory: "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${GRADLE_HOME}/bin"
-       tags: [ java, maven, gradle ]
+    #  - role: variables
+    #   #  env: "JAVA_HOME={{ runtime_directory }}/java MAVEN_HOME={{ client_directory }}/maven GRADLE_HOME={{ client_directory }}/gradle"
+    #    env: "GRADLE_HOME={{ client_directory }}/gradle"
+    #    executable_directory: "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${GRADLE_HOME}/bin"
+    #    tags: [ java, maven, gradle ]
     # Java and Maven is disabled as Oracle change the authentication mechanism to download Java
     #  - role: install_fetch_targz
     #    download_page: "https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html"
@@ -71,10 +71,10 @@
     #    application: "maven"
     #    directory: "{{ client_directory }}"
     #    tags: [ maven ]
-     - role: install_targz
-       application: "gradle"
-       extension: "zip"
-       directory: "{{ client_directory }}"
-       url: "https://downloads.gradle-dn.com/distributions/gradle-6.3-bin.zip"
-       tags: [ gradle ]     
+    #  - role: install_targz
+    #    application: "gradle"
+    #    extension: "zip"
+    #    directory: "{{ client_directory }}"
+    #    url: "https://downloads.gradle-dn.com/distributions/gradle-6.3-bin.zip"
+    #    tags: [ gradle ]     
 
