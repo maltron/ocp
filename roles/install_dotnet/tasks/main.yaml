@@ -1,2 +1,2 @@
 - name: Installing .NET 3.1
-  yum: name=dotnet-sdk-3.1 state=present
+  dnf: name=dotnet-sdk-3.1 state=present
