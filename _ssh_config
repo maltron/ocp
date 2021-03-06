@@ -1,6 +1,6 @@
 Host bastion
         User root
-        Hostname bastion.ce83.sandbox499.opentlc.com
+        Hostname bastion.07ae.sandbox605.opentlc.com
 
 Host ocp4
         User root
