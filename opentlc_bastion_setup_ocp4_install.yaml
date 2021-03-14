@@ -53,8 +53,9 @@
     - name: Inserting public key into /root/.ssh/authorized_keys
       copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
   roles:
-     - install_docker_ce
-     - install_git2
+    - install_epel_release
+    - install_docker_ce
+    # - install_git2
     #  - role: variables
     #    env: "JAVA_HOME={{ runtime_directory }}/java MAVEN_HOME={{ client_directory }}/maven GRADLE_HOME={{ client_directory }}/gradle"
     #    executable_directory: "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${GRADLE_HOME}/bin"
