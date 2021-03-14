@@ -21,6 +21,9 @@
 - name: Installing Docker CE
   yum: name=docker-ce state=present
 
+- name: Wait for 20 seconds before start Docker service
+  pause: seconds=20
+
 - name: Starting Docker CE Service
   service: name=docker state=started enabled=yes
 

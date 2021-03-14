@@ -1,10 +1,5 @@
 - name: Removing Original Git
   yum: name=git state=absent
 
-- name: Installing Git 2 
-  yum: name={{ item }} state=present
-  # loop: [ "https://repo.ius.io/ius-release-el7.rpm", "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" ]
-  loop: [ "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm", "https://repo.ius.io/ius-release-el7.rpm" ]
-
 - name: Installing Git 2 All
   yum: name=git224-all state=present

@@ -1,0 +1,2 @@
+- name: "Installing Epel Release from: {{ epel_release_url }}"
+  yum: name={{ epel_release_url }} disable_gpg_check=True state=present
