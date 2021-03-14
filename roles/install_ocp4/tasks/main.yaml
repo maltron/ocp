@@ -38,7 +38,7 @@
   tags: [ bastion ]
 
 - name: Installing all needed packages for Bastion
-  yum: name=screen state=present
+  dnf: name=screen state=present
   tags: [ bastion ]
 
 - name: Looking for available clients

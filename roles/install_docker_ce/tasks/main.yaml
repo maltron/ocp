@@ -1,5 +1,5 @@
 # - name: "Installing Python PIP"
-#   yum: name=python-pip state=latest
+#   dnf: name=python-pip state=latest
 
 # - name: "Library for Python: docker-py"
 #   command: pip install docker-py
@@ -12,14 +12,14 @@
   replace: path=/etc/yum.repos.d/docker-ce.repo regexp="[$]releasever" replace="7"
 
 - name: Removing Original Docker
-  yum: name=[docker,docker-ce,docker-common,docker-client,containerd.io] state=absent
+  dnf: name=[docker,docker-ce,docker-common,docker-client,containerd.io] state=absent
 
 - name: Installing ContainerD.IO 
-  yum: name=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-{{ containerd_version }}.el7.x86_64.rpm
+  dnf: name=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-{{ containerd_version }}.el7.x86_64.rpm
        disable_gpg_check=true state=present
 
 - name: Installing Docker CE
-  yum: name=docker-ce state=present
+  dnf: name=docker-ce state=present
 
 - name: Wait for 20 seconds before start Docker service
   pause: seconds=20

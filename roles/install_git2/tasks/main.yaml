@@ -1,5 +1,5 @@
 - name: Removing Original Git
-  yum: name=git state=absent
+  dnf: name=git state=absent
 
 - name: Installing Git 2 All
-  yum: name=git224-all state=present
+  dnf: name=git224-all state=present
