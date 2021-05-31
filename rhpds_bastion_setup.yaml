@@ -47,6 +47,7 @@
     - name: Inserting public key into /root/.ssh/authorized_keys
       copy: dest=/root/.ssh/authorized_keys content={{ hostvars['localhost']['public_key'] }}
   roles:
+     - install_epel_release
     #  - install_docker_ce
      - install_dotnet
    #   - install_git2
@@ -77,4 +78,9 @@
     #    directory: "{{ client_directory }}"
     #    url: "https://downloads.gradle-dn.com/distributions/gradle-6.3-bin.zip"
     #    tags: [ gradle ]     
+  tasks:
+     - name: Installing "screen" for background tasks
+       dnf: name="screen" state=present
 
+     - name: "Cloning Basic Application for Service Mesh: 3Services"
+       git: repo=https://github.com/maltron/3services.git dest=/root/3services
