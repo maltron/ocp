@@ -4,3 +4,17 @@ servicemesh_subscriptions:
   - { operator: "jaeger-product", namespace: "openshift-operators" }
   - { operator: "kiali-ossm", namespace: "openshift-operators" }
   - { operator: "servicemeshoperator", namespace: "openshift-operators" }
+servicemesh_cleanup:
+  - "{{ oc_client }} delete validatingwebhookconfiguration/openshift-operators.servicemesh-resources.maistra.io"
+  - "{{ oc_client }} delete mutatingwebhookconfigurations/openshift-operators.servicemesh-resources.maistra.io"
+  - "{{ oc_client }} delete svc maistra-admission-controller -n openshift-operators"
+  - "{{ oc_client }} delete -n openshift-operators daemonset/istio-node"
+  - "{{ oc_client }} delete clusterrole/istio-admin clusterrole/istio-cni clusterrolebinding/istio-cni"
+  - "{{ oc_client }} delete clusterrole istio-view istio-edit"
+  - "{{ oc_client }} delete clusterrole jaegers.jaegertracing.io-v1-admin jaegers.jaegertracing.io-v1-crdview jaegers.jaegertracing.io-v1-edit jaegers.jaegertracing.io-v1-view"
+  - "{{ oc_client }} get crds -o name | grep '.*\\.istio\\.io' | xargs -r -n 1 oc delete"
+  - "{{ oc_client }} get crds -o name | grep '.*\\.maistra\\.io' | xargs -r -n 1 oc delete"
+  - "{{ oc_client }} get crds -o name | grep '.*\\.kiali\\.io' | xargs -r -n 1 oc delete"
+  - "{{ oc_client }} delete crds jaegers.jaegertracing.io"
+  - "{{ oc_client }} delete secret -n openshift-operators maistra-operator-serving-cert"
+  - "{{ oc_client }} delete cm -n openshift-operators maistra-operator-cabundle"

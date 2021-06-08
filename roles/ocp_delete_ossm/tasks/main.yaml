@@ -1,17 +1,25 @@
 - name: Deleting all the necessary ServiceMesh Member Rolls
   command: "{{ oc_client }} delete servicemeshmemberrolls --all --namespace {{ servicemesh_namespace }}"
+  ignore_errors: true
 
 - name: Deleting all the necessary ServiceMesh ControlPlanes
   command: "{{ oc_client }} delete servicemeshcontrolplanes --all --namespace {{ servicemesh_namespace }}"
+  ignore_errors: true
 
 - name: Deleting all Subscriptions
   command: "{{ oc_client }} delete subscription {{ item.operator }} --namespace {{ item.namespace }}"
   with_items: "{{ servicemesh_subscriptions }}"
   ignore_errors: true
 
-#- name: Deleting all ClusterServiceVersions
-#  command: "{{ oc_client }} delete clusterserviceversions --all-namespaces --all"
+- name: Deleting all ClusterServiceVersions
+  command: "{{ oc_client }} delete clusterserviceversions --all-namespaces --all"
+
+- name: Cleaning up
+  shell: "{{ item }}"
+  with_items: "{{ servicemesh_cleanup }}"
+  ignore_errors: true
 
 - name: "Deleting namespace: {{ servicemesh_namespace }}"
   command: "{{ oc_client }} delete project/{{ servicemesh_namespace }}"
+  ignore_errors: true
 
