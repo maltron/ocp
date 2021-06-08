@@ -82,5 +82,8 @@
      - name: Installing "screen" for background tasks
        dnf: name="screen" state=present
 
+     - name: "Cloning scripts to handle OSSM daily operations"
+       git: repo=https://github.com/maltron/k8scripts.git dest=/root/k8scripts
+
      - name: "Cloning Basic Application for Service Mesh: 3Services"
        git: repo=https://github.com/maltron/3services.git dest=/root/3services
