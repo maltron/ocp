@@ -87,3 +87,10 @@
 
      - name: "Cloning Basic Application for Service Mesh: 3Services"
        git: repo=https://github.com/maltron/3services.git dest=/root/3services
+
+- name: Running 3services application in the background
+  hosts: localhost
+  gather_facts: false
+  tasks:
+     - name: "Running a sample application on Service Mesh in the background: screen -x"
+       command: "ssh bastion \"screen -dmS one bash -c 'cd /root/3services; ../k8scripts/ossm/ossm_new_project.sh one; scripts/deploy.sh; oc expose service/microservice-a; scripts/loop_microservice-a.sh'\""
