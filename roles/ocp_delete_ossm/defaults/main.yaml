@@ -1,6 +1,6 @@
 servicemesh_namespace: "ossm-system"
 servicemesh_subscriptions:
-  - { operator: "elasticsearch-operator", namespace: "openshift-operators-redhat" }
+  - { operator: "elasticsearch-operator", namespace: "openshift-operators" }
   - { operator: "jaeger-product", namespace: "openshift-operators" }
   - { operator: "kiali-ossm", namespace: "openshift-operators" }
   - { operator: "servicemeshoperator", namespace: "openshift-operators" }
