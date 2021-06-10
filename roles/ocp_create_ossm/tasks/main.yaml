@@ -2,6 +2,10 @@
   command: "{{ oc_client }} new-project {{ servicemesh_namespace }}"
   ignore_errors: True
 
+- name: "Create Namespace for ElasticSearch: openshift-operators-redhat"
+  command: "{{ oc_client }} create namespace openshift-operators-redhat"
+  ignore_errors: True
+
 - name: "Create all the necessary Operators needed"
   command: "{{ oc_client }} apply --filename={{ inventory_dir }}/roles/ocp_create_ossm/defaults/operators.yaml"
   ignore_errors: True
