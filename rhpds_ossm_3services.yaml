@@ -1,0 +1,49 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: "RHPDS: Running OSSM's 3services application"
+  hosts: localhost
+  connection: local
+  gather_facts: True
+  vars_files: 
+      - configuration.yaml
+      - credentials.yaml
+  vars:
+     cloudforms_api_url: "{{ rhpds_api_url }}"
+  pre_tasks:
+     - name: "Parameter: username"
+       fail: msg="username is not defined or is empty"
+       when: username is not defined or username is none
+       tags: [ always ]
+
+     - name: "Parameter: password"
+       fail: msg="password is not defined or is empty"
+       when: password is not defined or password is none
+       tags: [ always ]
+  roles: 
+     - role: cloudforms_login
+     - role: cloudforms_check_existing_service
+     - role: cloudforms_fetch_custom_attributes_rhpds
+     - role: bastion_init
+
+- name: Installing screen and cloning repositories
+  hosts: openshift_bastion
+  gather_facts: false
+  become: true
+  roles:
+     - install_epel_release
+  tasks:
+     - name: Installing "screen" for background tasks
+       dnf: name="screen" state=present
+
+     - name: "Cloning scripts to handle OSSM daily operations"
+       git: repo=https://github.com/maltron/k8scripts.git dest=/root/k8scripts
+
+     - name: "Cloning Basic Application for Service Mesh: 3Services"
+       git: repo=https://github.com/maltron/3services.git dest=/root/3services
+
+- name: Running 3services application in the background
+  hosts: localhost
+  gather_facts: false
+  tasks:
+     - name: "Running a sample application on Service Mesh in the background: screen -x"
+       command: "ssh -o StrictHostKeyChecking=no bastion \"screen -dmS one bash -c 'cd /root/3services; ../k8scripts/ossm/ossm_new_project.sh one; scripts/deploy.sh; oc expose service/microservice-a; scripts/loop_microservice-a.sh'\""
