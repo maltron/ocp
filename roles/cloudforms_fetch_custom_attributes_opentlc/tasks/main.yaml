@@ -1,6 +1,7 @@
 - name: "Fetching Custom Attributes{{ ':' }} {{ service_selected }}"
   uri: url={{ service_selected }}?attributes=custom_attributes method=GET status_code=200
-      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+       validate_certs=False
+       headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
   register: custom_attributes
 
 - name: Fetching SSH Access information (Environment Info 005)
