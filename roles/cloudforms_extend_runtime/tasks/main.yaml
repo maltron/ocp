@@ -1,6 +1,7 @@
 - name: "Extend Runtime for 12 hours: {{ service_selected }}"
   uri: url={{ service_selected }}
        method=POST status_code=200 body_format=json
+       validate_certs=False
        headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
        body='{"expiration":"12","action":"Extend Runtime"}'
  

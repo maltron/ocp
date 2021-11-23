@@ -1,5 +1,6 @@
 - name: "Request Service: {{ service_name }}"
   uri: url={{ cloudforms_api_url }}{{ service_catalogue }}
-      method=POST status_code=200 body_format=json
-      headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
-      body='{"status":"t","warning":"**IMPORTANT ","expense_text":"WARNING","check":"t","notes":"Development - PnT engineering","salesforce":"9342114443","expiration":"7","expd":"2021-03-13 14:03:26 UTC","runtime":"15","users":"5","region":"{{ cloudforms_region }}","quotacheck":"t","quotatext":"Quota check passed, you are currently running 2 applications and your quota is 3.","size":"TRAINING","openshift_version":"48","salesforce":"","users":"1","notes":"Development - Solution prototyping","use_letsencrypt":"t","open_env":"f","course_module_list":"","rosa_token":"","environment":"PROD","action":"order"}'
+       method=POST status_code=200 body_format=json
+       validate_certs=False
+       headers={"Content-type":"application/json","Accept":"application/json","X-Auth-Token":"{{ authentication_token }}"}
+       body='{"status":"t","warning":"**IMPORTANT ","expense_text":"WARNING","check":"t","notes":"Development - PnT engineering","salesforce":"9342114443","expiration":"7","expd":"2021-03-13 14:03:26 UTC","runtime":"15","users":"5","region":"{{ cloudforms_region }}","quotacheck":"t","quotatext":"Quota check passed, you are currently running 2 applications and your quota is 3.","size":"TRAINING","openshift_version":"48","salesforce":"","users":"1","notes":"Development - Solution prototyping","use_letsencrypt":"t","open_env":"f","course_module_list":"","rosa_token":"","environment":"PROD","action":"order"}'
